@@ -1,7 +1,7 @@
-from src.data_preprocessing import load_data, preprocess_data
-from src.feature_engineering import create_features
-from src.model_training import train_models
-from src.evaluate_model import evaluate_model
+from data_preprocessing import load_data, preprocess_data
+from feature_engineering import create_features
+from model_training import train_models
+from evaluate_model import evaluate_model
 import pandas as pd
 import sys
 import os
