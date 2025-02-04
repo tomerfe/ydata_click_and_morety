@@ -3,6 +3,10 @@ from src.feature_engineering import create_features
 from src.model_training import train_models
 from src.evaluate_model import evaluate_model
 import pandas as pd
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Load and preprocess data
 df, df_train, x_test = load_data("data/train_dataset_full.csv", "data/x_test_1.csv")
