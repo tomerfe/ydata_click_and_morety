@@ -1,4 +1,4 @@
-# train_dt.py
+# train_nb.py
 import argparse
 import pandas as pd
 import seaborn as sns
@@ -7,7 +7,7 @@ import wandb
 import joblib
 import os
 import datetime
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import (balanced_accuracy_score, f1_score, precision_score,
                              recall_score, cohen_kappa_score, confusion_matrix)
 
@@ -16,7 +16,7 @@ def get_data():
     df_test  = pd.read_csv("data/test.csv")
     return df_train, df_test
 
-def train(model_name: str, max_depth: int, min_samples_split: int, min_samples_leaf: int, output_dir: str = "models"):
+def train(model_name: str, var_smoothing: float, output_dir: str = "models"):
     os.makedirs(output_dir, exist_ok=True)
     df_train, df_test = get_data()
     X_train = df_train.drop(columns=['is_click'])
@@ -24,13 +24,7 @@ def train(model_name: str, max_depth: int, min_samples_split: int, min_samples_l
     X_test  = df_test.drop(columns=['is_click'])
     y_test  = df_test['is_click']
 
-    model = DecisionTreeClassifier(
-        max_depth=max_depth,
-        min_samples_split=min_samples_split,
-        min_samples_leaf=min_samples_leaf,
-        class_weight='balanced',
-        random_state=42
-    )
+    model = GaussianNB(var_smoothing=var_smoothing)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
 
@@ -65,9 +59,7 @@ def train(model_name: str, max_depth: int, min_samples_split: int, min_samples_l
         "cohen_kappa": kappa,
         "confusion_matrix": cm.tolist(),
         "model_name": model_name,
-        "max_depth": max_depth,
-        "min_samples_split": min_samples_split,
-        "min_samples_leaf": min_samples_leaf
+        "var_smoothing": var_smoothing
     })
 
     incumbent_path = os.path.join(output_dir, f"{model_name}.joblib")
@@ -78,12 +70,12 @@ def train(model_name: str, max_depth: int, min_samples_split: int, min_samples_l
         incumbent_bal_acc = incumbent_metadata.get("balanced_accuracy", 0)
         print(f"Incumbent {model_name} has Balanced Accuracy: {incumbent_bal_acc:.4f}")
         if bal_acc > incumbent_bal_acc:
-            print("New decision tree model is better. Replacing incumbent.")
+            print("New Naive Bayes model is better. Replacing incumbent.")
             replace_flag = True
         else:
-            print("New decision tree model is not better. Saving candidate separately.")
+            print("New Naive Bayes model is not better. Saving candidate separately.")
     else:
-        print("No incumbent decision tree model found. Saving new model as incumbent.")
+        print("No incumbent Naive Bayes model found. Saving new model as incumbent.")
         replace_flag = True
 
     if replace_flag:
@@ -95,11 +87,7 @@ def train(model_name: str, max_depth: int, min_samples_split: int, min_samples_l
             "precision": precision,
             "recall": recall,
             "cohen_kappa": kappa,
-            "parameters": {
-                "max_depth": max_depth,
-                "min_samples_split": min_samples_split,
-                "min_samples_leaf": min_samples_leaf
-            }
+            "parameters": {"var_smoothing": var_smoothing}
         }
         joblib.dump(metadata, incumbent_meta_path)
         print(f"Model saved as incumbent to {incumbent_path}")
@@ -114,13 +102,11 @@ def train(model_name: str, max_depth: int, min_samples_split: int, min_samples_l
     return saved_path, bal_acc
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Decision Tree Trainer")
-    parser.add_argument("-m", "--model-name", default="DecisionTree")
-    parser.add_argument("-d", "--max-depth", type=int, default=10)
-    parser.add_argument("-s", "--min-samples-split", type=int, default=2)
-    parser.add_argument("-l", "--min-samples-leaf", type=int, default=1)
+    parser = argparse.ArgumentParser(description="Naive Bayes Trainer")
+    parser.add_argument("-m", "--model-name", default="NaiveBayes")
+    parser.add_argument("-v", "--var-smoothing", type=float, default=1e-9)
     parser.add_argument("-o", "--output-dir", default="models")
     args = parser.parse_args()
 
     wandb.init(project="model-training", name=args.model_name, config=vars(args))
-    train(args.model-name, args.max_depth, args.min_samples_split, args.min_samples_leaf, args.output_dir)
+    train(args.model_name, args.var_smoothing, args.output_dir)
