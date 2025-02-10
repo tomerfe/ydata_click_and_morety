@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import argparse
 from sklearn.model_selection import train_test_split
-import os
 
 # Suppress all warnings
 warnings.filterwarnings('ignore')
@@ -78,7 +77,7 @@ def preprocess_data(mode, train_path=None, test_path=None):
         else:
             df[f'{col1}_{val1}_{col2}'] = ((df[col1] == val1) & (df['product'] == col2)).astype(int)'''
 
-    session_bins = [(1, 10), (11, 20), (21, 50), (50, 100)]
+    session_bins = [(1, 5),(6, 10), (11, 20), (21, 50), (50, 100)]
     for start, end in session_bins:
         df[f'session_{start}_{end}'] = (
                     (df['total_sessions_per_user'] >= start) & (df['total_sessions_per_user'] < end)).astype(int)
