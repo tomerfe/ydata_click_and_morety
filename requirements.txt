@@ -1,4 +1,7 @@
 pandas
+scikit-learn
+invoke
+datetime
 numpy
 seaborn
 matplotlib
@@ -8,3 +11,4 @@ xgboost
 catboost
 scikit-optimize
 optuna
+wandb
