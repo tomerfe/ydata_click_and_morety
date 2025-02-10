@@ -12,3 +12,4 @@ catboost
 scikit-optimize
 optuna
 wandb
+os
