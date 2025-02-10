@@ -4,6 +4,17 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from lightgbm import LGBMClassifier
 import pandas as pd
+import wandb
+
+wandb.init(
+    project="CTR_Prediction_YData_Phase2",
+    name="model_training_baseline",
+    config={
+        "test_size": 0.2,
+        "random_state": 7
+    }
+)
+
 
 def train_models(X_train, y_train):
     models = {
@@ -15,6 +26,7 @@ def train_models(X_train, y_train):
     
     for name, model in models.items():
         model.fit(X_train, y_train)
+        wandb.log({f"{name}_trained": True})
         print(f"Trained {name}")
     
     return models
