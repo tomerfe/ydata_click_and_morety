@@ -23,6 +23,8 @@ def preprocess_data(mode, train_path=None, test_path=None):
     else:
         raise ValueError("Mode must be either 'train' or 'predict'")
 
+    print("Columns in dataframe before dropping:", df.columns.tolist())
+
     # Preprocessing
     df.drop(['product_category_2', 'city_development_index'], axis=1, inplace=True)
     if mode == 'train':
