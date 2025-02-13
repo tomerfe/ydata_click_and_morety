@@ -36,6 +36,14 @@ def preprocess_data(mode, train_path=None, test_path=None):
     labels = ['user_group_id']
     df[labels] = df.groupby('user_id')[labels].transform(lambda x: x.fillna(method='ffill').fillna(method='bfill'))
 
+    # Fill missing user_group_id values by the underlying logic
+    df['user_group_id'] = np.where(df['gender'] == 'Male', df['age_level'], df['age_level'] + 6)
+
+    # Fill missing campaign_id values by the webpage_id values
+    mapping_dict = df.dropna().set_index('webpage_id')['campaign_id'].to_dict()
+    df['campaign_id'] = df['campaign_id'].fillna(df['webpage_id'].map(mapping_dict))
+
+
     if mode == 'predict':
         df['user_group_id'] = np.where(df['gender'] == 'Male', df['age_level'], df['age_level'] + 6)
         mapping_dict = x_test_1.dropna().set_index('webpage_id')['campaign_id'].to_dict()
