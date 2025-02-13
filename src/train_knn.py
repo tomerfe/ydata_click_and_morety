@@ -8,7 +8,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import wandb
-from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import (balanced_accuracy_score, f1_score, precision_score,
                              recall_score, cohen_kappa_score, confusion_matrix,
                              recall_score, precision_score)
@@ -20,7 +20,7 @@ def get_data(train_path, test_path):
     return df_train, df_test
 
 
-def train(model_name: str, C: float, max_iter: int, solver: str, penalty: str,
+def train(model_name: str, n_neighbors: int, weights: str, algorithm: str, leaf_size: int,
           train_path: str, test_path: str, output_dir: str = "models"):
     os.makedirs(output_dir, exist_ok=True)
     df_train, df_test = get_data(train_path, test_path)
@@ -29,13 +29,11 @@ def train(model_name: str, C: float, max_iter: int, solver: str, penalty: str,
     X_test = df_test.drop(columns=['is_click'])
     y_test = df_test['is_click']
 
-    model = LogisticRegression(
-        C=C,
-        max_iter=max_iter,
-        solver=solver,
-        penalty=penalty,
-        class_weight='balanced',
-        random_state=42,
+    model = KNeighborsClassifier(
+        n_neighbors=n_neighbors,
+        weights=weights,
+        algorithm=algorithm,
+        leaf_size=leaf_size,
         n_jobs=-1
     )
     model.fit(X_train, y_train)
@@ -66,29 +64,32 @@ def train(model_name: str, C: float, max_iter: int, solver: str, penalty: str,
     plt.close()
     cm_table = wandb.Table(data=cm.tolist(), columns=["Predicted 0", "Predicted 1"])
 
-    # Threshold metrics plot (without local reimport)
-    y_probs = model.predict_proba(X_test)[:, 1]
-    thresholds = np.linspace(0, 1, 100)
-    recalls, precisions, bal_accs, f1s = [], [], [], []
-    for thresh in thresholds:
-        y_pred_thresh = (y_probs >= thresh).astype(int)
-        recalls.append(recall_score(y_test, y_pred_thresh))
-        precisions.append(precision_score(y_test, y_pred_thresh))
-        f1s.append(f1_score(y_test, y_pred_thresh))
-        bal_accs.append(balanced_accuracy_score(y_test, y_pred_thresh))
-    plt.figure(figsize=(8, 6))
-    plt.plot(thresholds, recalls, label='Recall')
-    plt.plot(thresholds, precisions, label='Precision')
-    plt.plot(thresholds, bal_accs, label='Balanced Accuracy')
-    plt.plot(thresholds, f1s, label='F1 Score')
-    plt.xlabel('Threshold')
-    plt.ylabel('Metric Value')
-    plt.title('Metrics vs Threshold')
-    plt.legend()
-    thresh_fig_path = os.path.join(output_dir, f"{model_name}_threshold_metrics.png")
-    plt.savefig(thresh_fig_path)
-    plt.close()
-    thresh_img = wandb.Image(thresh_fig_path, caption="Metrics vs Threshold")
+    # Threshold metrics plot (if predict_proba is available)
+    if hasattr(model, "predict_proba"):
+        y_probs = model.predict_proba(X_test)[:, 1]
+        thresholds = np.linspace(0, 1, 100)
+        recalls, precisions, bal_accs, f1s = [], [], [], []
+        for thresh in thresholds:
+            y_pred_thresh = (y_probs >= thresh).astype(int)
+            recalls.append(recall_score(y_test, y_pred_thresh))
+            precisions.append(precision_score(y_test, y_pred_thresh))
+            f1s.append(f1_score(y_test, y_pred_thresh))
+            bal_accs.append(balanced_accuracy_score(y_test, y_pred_thresh))
+        plt.figure(figsize=(8, 6))
+        plt.plot(thresholds, recalls, label='Recall')
+        plt.plot(thresholds, precisions, label='Precision')
+        plt.plot(thresholds, bal_accs, label='Balanced Accuracy')
+        plt.plot(thresholds, f1s, label='F1 Score')
+        plt.xlabel('Threshold')
+        plt.ylabel('Metric Value')
+        plt.title('Metrics vs Threshold')
+        plt.legend()
+        thresh_fig_path = os.path.join(output_dir, f"{model_name}_threshold_metrics.png")
+        plt.savefig(thresh_fig_path)
+        plt.close()
+        thresh_img = wandb.Image(thresh_fig_path, caption="Metrics vs Threshold")
+    else:
+        thresh_img = None
 
     wandb.log({
         "balanced_accuracy": bal_acc,
@@ -100,10 +101,10 @@ def train(model_name: str, C: float, max_iter: int, solver: str, penalty: str,
         "confusion_matrix": cm_table,
         "confusion_matrix_image": wandb.Image(cm_fig_path, caption="Confusion Matrix"),
         "threshold_metrics_plot": thresh_img,
-        "C": C,
-        "max_iter": max_iter,
-        "solver": solver,
-        "penalty": penalty
+        "n_neighbors": n_neighbors,
+        "weights": weights,
+        "algorithm": algorithm,
+        "leaf_size": leaf_size
     })
 
     incumbent_path = os.path.join(output_dir, f"{model_name}.joblib")
@@ -114,12 +115,12 @@ def train(model_name: str, C: float, max_iter: int, solver: str, penalty: str,
         incumbent_bal_acc = incumbent_metadata.get("balanced_accuracy", 0)
         print(f"Incumbent {model_name} has Balanced Accuracy: {incumbent_bal_acc:.4f}")
         if bal_acc > incumbent_bal_acc:
-            print("New Logistic Regression model is better. Replacing incumbent.")
+            print("New KNN model is better. Replacing incumbent.")
             replace_flag = True
         else:
-            print("New Logistic Regression model is not better. Saving candidate separately.")
+            print("New KNN model is not better. Saving candidate separately.")
     else:
-        print("No incumbent Logistic Regression model found. Saving new model as incumbent.")
+        print("No incumbent KNN model found. Saving new model as incumbent.")
         replace_flag = True
 
     if replace_flag:
@@ -131,7 +132,8 @@ def train(model_name: str, C: float, max_iter: int, solver: str, penalty: str,
             "precision": prec,
             "recall": rec,
             "cohen_kappa": kappa,
-            "parameters": {"C": C, "max_iter": max_iter, "solver": solver, "penalty": penalty}
+            "parameters": {"n_neighbors": n_neighbors, "weights": weights, "algorithm": algorithm,
+                           "leaf_size": leaf_size}
         }
         joblib.dump(metadata, incumbent_meta_path)
         print(f"Model saved as incumbent to {incumbent_path}")
@@ -147,17 +149,17 @@ def train(model_name: str, C: float, max_iter: int, solver: str, penalty: str,
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Logistic Regression Trainer")
-    parser.add_argument("-m", "--model-name", default="LogisticRegression")
-    parser.add_argument("--C", type=float, default=1.0)
-    parser.add_argument("--max-iter", type=int, default=1000)
-    parser.add_argument("--solver", type=str, default="lbfgs")
-    parser.add_argument("--penalty", type=str, default="l2")
+    parser = argparse.ArgumentParser(description="KNN Trainer")
+    parser.add_argument("-m", "--model-name", default="KNN")
+    parser.add_argument("--n-neighbors", type=int, default=5)
+    parser.add_argument("--weights", type=str, default="uniform", choices=["uniform", "distance"])
+    parser.add_argument("--algorithm", type=str, default="auto", choices=["auto", "ball_tree", "kd_tree", "brute"])
+    parser.add_argument("--leaf-size", type=int, default=30)
     parser.add_argument("-o", "--output-dir", default="/home/matangold/ydata/models")
     parser.add_argument("-t", "--train-path", default="/home/matangold/ydata/data/train.csv")
     parser.add_argument("-p", "--test-path", default="/home/matangold/ydata/data/test.csv")
     args = parser.parse_args()
 
     wandb.init(project="model-training", name=args.model_name, config=vars(args))
-    train(args.model_name, args.C, args.max_iter, args.solver, args.penalty, args.train_path, args.test_path,
-          args.output_dir)
+    train(args.model_name, args.n_neighbors, args.weights, args.algorithm, args.leaf_size,
+          args.train_path, args.test_path, args.output_dir)
