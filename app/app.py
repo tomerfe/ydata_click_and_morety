@@ -18,7 +18,9 @@ from sklearn.metrics import (
     confusion_matrix, classification_report, roc_curve, balanced_accuracy_score
 )
 
-sys.path.append(str(Path('..').resolve()))
+current_dir = Path(__file__).resolve().parent
+project_root = current_dir.parent
+sys.path.append(str(project_root))
 from src.preprocess import preprocess_data
 
 
@@ -32,10 +34,10 @@ def get_model(model_path):
         st.error(f"Model file not found at: {model_path}")
         st.stop()
     # Check if model.joblib or model.pkl file
-    if model_path.endswith('.joblib'):
+    if model_path.suffix == '.joblib':
          with open(model_path, 'rb') as f:
             model = joblib.load(f)
-    elif model_path.endswith('.pkl') or model_path.endswith('.sav'):
+    elif model_path.suffix =='.pkl' or model_path.suffix =='.sav':
         with open(model_path, 'rb') as f:
             model = pickle.load(f)
     else:
@@ -170,12 +172,18 @@ def evaluate_model(model, X_test, y_test, threshold):
 def main():
     st.set_page_config(page_title="CTR Click Prediction Evaluation", layout="wide")
     st.title("CTR Click Prediction Evaluation App")
-    
+
     # Define fixed paths for training (used in preprocessing) and evaluation test set.
-    TRAIN_PATH = "../data/train_dataset_full.csv"  # update if needed
-    EVAL_TEST_PATH = "../data/X_test_1st.csv"         # used for evaluation tab
-    LABEL_TEST_PATH = '../data/y_test_1st.csv'
-    MODEL_PATH = '../models/XGBoost.joblib'
+    #TRAIN_PATH = "../data/train_dataset_full.csv"  # update if needed
+    #EVAL_TEST_PATH = "../data/X_test_1st.csv"         # used for evaluation tab
+    #LABEL_TEST_PATH = '../data/y_test_1st.csv'
+    #MODEL_PATH = '../models/XGBoost.joblib'
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    # Define fixed paths using the pathlib syntax
+    TRAIN_PATH = BASE_DIR / "data" / "train_dataset_full.csv"
+    EVAL_TEST_PATH = BASE_DIR / "data" / "X_test_1st.csv"
+    LABEL_TEST_PATH = BASE_DIR / "data" / "y_test_1st.csv"
+    MODEL_PATH = BASE_DIR / "models" / "XGBoost.joblib"
     # Create two tabs: one for uploading a test set & scoring, and one for model evaluation.
     tab_upload, tab_eval = st.tabs(["Upload & Score", "Model Evaluation"])
     
@@ -243,6 +251,7 @@ def main():
             y_test = pd.read_csv(LABEL_TEST_PATH, header=None).values.reshape(-1)
             # Call preprocess_data in "predict" mode using fixed file paths.
             x_test_dummies, _ = preprocess_data("predict", train_path=TRAIN_PATH, test_path=EVAL_TEST_PATH)
+            st.dataframe(x_test_dummies.head())
         st.success("Data loaded and preprocessed successfully!")
         
         with st.spinner("Loading model..."):
