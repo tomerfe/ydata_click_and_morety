@@ -1,0 +1,51 @@
+{
+  "os":  "Windows-11-10.0.26100-SP0",
+  "python":  "CPython 3.12.4",
+  "startedAt":  "2025-02-14T16:33:44.280036Z",
+  "args":  [
+    "--base-model-dir",
+    "C:\\Users\\Golds\\.cookiecutters\\serj-ds-skeleton\\{{cookiecutter.project_name}}\\ydata_click_and_morety\\models",
+    "--train-path",
+    "C:\\Users\\Golds\\.cookiecutters\\serj-ds-skeleton\\{{cookiecutter.project_name}}\\ydata_click_and_morety\\data\\train.csv",
+    "--test-path",
+    "C:\\Users\\Golds\\.cookiecutters\\serj-ds-skeleton\\{{cookiecutter.project_name}}\\ydata_click_and_morety\\data\\test.csv",
+    "--output-dir",
+    "C:\\Users\\Golds\\.cookiecutters\\serj-ds-skeleton\\{{cookiecutter.project_name}}\\ydata_click_and_morety\\models",
+    "--C",
+    "0.1",
+    "--solver",
+    "lbfgs",
+    "--penalty",
+    "l2",
+    "--max-iter",
+    "1000",
+    "--base-models",
+    "lightgbm,random_forest,naive_baye"
+  ],
+  "program":  "C:\\Users\\Golds\\.cookiecutters\\serj-ds-skeleton\\{{cookiecutter.project_name}}\\ydata_click_and_morety\\src\\train_stack.py",
+  "codePath":  "src\\train_stack.py",
+  "git":  {
+    "remote":  "https://github.com/Matan-Gold/ydata_click_and_morety.git",
+    "commit":  "0f5a03d26f593977dcd73b6b16835ffdd9deec77"
+  },
+  "email":  "goldshllager@gmail.com",
+  "root":  "C:\\Users\\Golds\\.cookiecutters\\serj-ds-skeleton\\{{cookiecutter.project_name}}\\ydata_click_and_morety\\src",
+  "host":  "DESKTOP-3RD2EFI",
+  "executable":  "C:\\Users\\Golds\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+  "codePathLocal":  "train_stack.py",
+  "cpu_count":  4,
+  "cpu_count_logical":  8,
+  "disk":  {
+    "/":  {
+      "total":  "510953312256",
+      "used":  "426405031936"
+    }
+  },
+  "memory":  {
+    "total":  "8299257856"
+  },
+  "cpu":  {
+    "count":  4,
+    "countLogical":  8
+  }
+}

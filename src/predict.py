@@ -38,7 +38,7 @@ def load_data(file_path):
 # ----------------------------
 def load_base_models(model_dir):
     model_filenames = {
-        'lightgbm': 'LightGBM.joblib',
+        'lightgbm': 'LightGBM1.joblib',
         'random_forest': 'RandomForest.joblib',
         'xgboost': 'XGBoost.joblib',
         'logistic_regression': 'LogisticRegression.joblib',

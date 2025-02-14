@@ -1,0 +1,20 @@
+Loaded base model 'lightgbm' from C:\Users\Golds\.cookiecutters\serj-ds-skeleton\{{cookiecutter.project_name}}\ydata_click_and_morety\models\LightGBM1.joblib
+Loaded base model 'random_forest' from C:\Users\Golds\.cookiecutters\serj-ds-skeleton\{{cookiecutter.project_name}}\ydata_click_and_morety\models\RandomForest.joblib
+Warning: Unknown base model key 'naive_baye'. Skipping.
+[LightGBM] [Warning] feature_fraction is set=0.5479483570468295, colsample_bytree=0.7150456512055541 will be ignored. Current value: feature_fraction=0.5479483570468295
+[LightGBM] [Warning] bagging_fraction is set=0.4201006535438501, subsample=0.7111523623347351 will be ignored. Current value: bagging_fraction=0.4201006535438501
+[LightGBM] [Warning] bagging_freq is set=3, subsample_freq=0 will be ignored. Current value: bagging_freq=3
+[LightGBM] [Warning] feature_fraction is set=0.5479483570468295, colsample_bytree=0.7150456512055541 will be ignored. Current value: feature_fraction=0.5479483570468295
+[LightGBM] [Warning] bagging_fraction is set=0.4201006535438501, subsample=0.7111523623347351 will be ignored. Current value: bagging_fraction=0.4201006535438501
+[LightGBM] [Warning] bagging_freq is set=3, subsample_freq=0 will be ignored. Current value: bagging_freq=3
+Meta model coefficients: [9.283300583877558, -4.89008385830441]
+Meta model intercept: -2.206215759124086
+StackingLR - Balanced Accuracy: 0.5843
+StackingLR - Weighted F1 Score: 0.6802
+StackingLR - Binary F1 Score: 0.1598
+StackingLR - Precision: 0.0924
+StackingLR - Recall: 0.5918
+StackingLR - Cohen Kappa: 0.0481
+Incumbent StackingLR has Balanced Accuracy: 0.5774
+New stacking model is better. Replacing incumbent.
+Stacking model saved as incumbent to C:\Users\Golds\.cookiecutters\serj-ds-skeleton\{{cookiecutter.project_name}}\ydata_click_and_morety\models\StackingLR.joblib

@@ -1,0 +1,20 @@
+Loaded base model 'lightgbm' from C:\Users\Golds\.cookiecutters\serj-ds-skeleton\{{cookiecutter.project_name}}\ydata_click_and_morety\models\LightGBM.joblib
+Loaded base model 'random_forest' from C:\Users\Golds\.cookiecutters\serj-ds-skeleton\{{cookiecutter.project_name}}\ydata_click_and_morety\models\RandomForest.joblib
+Loaded base model 'logistic_regression' from C:\Users\Golds\.cookiecutters\serj-ds-skeleton\{{cookiecutter.project_name}}\ydata_click_and_morety\models\LogisticRegression.joblib
+Loaded base model 'naive_bayes' from C:\Users\Golds\.cookiecutters\serj-ds-skeleton\{{cookiecutter.project_name}}\ydata_click_and_morety\models\NaiveBayes.joblib
+Loaded base model 'xgboost' from C:\Users\Golds\.cookiecutters\serj-ds-skeleton\{{cookiecutter.project_name}}\ydata_click_and_morety\models\XGBoost.joblib
+[LightGBM] [Warning] feature_fraction is set=0.5479483570468295, colsample_bytree=0.7150456512055541 will be ignored. Current value: feature_fraction=0.5479483570468295
+[LightGBM] [Warning] bagging_fraction is set=0.4201006535438501, subsample=0.7111523623347351 will be ignored. Current value: bagging_fraction=0.4201006535438501
+[LightGBM] [Warning] bagging_freq is set=3, subsample_freq=0 will be ignored. Current value: bagging_freq=3
+[LightGBM] [Warning] feature_fraction is set=0.5479483570468295, colsample_bytree=0.7150456512055541 will be ignored. Current value: feature_fraction=0.5479483570468295
+[LightGBM] [Warning] bagging_fraction is set=0.4201006535438501, subsample=0.7111523623347351 will be ignored. Current value: bagging_fraction=0.4201006535438501
+[LightGBM] [Warning] bagging_freq is set=3, subsample_freq=0 will be ignored. Current value: bagging_freq=3
+StackingLR - Balanced Accuracy: 0.5667
+StackingLR - Weighted F1 Score: 0.6896
+StackingLR - Binary F1 Score: 0.1515
+StackingLR - Precision: 0.0881
+StackingLR - Recall: 0.5409
+StackingLR - Cohen Kappa: 0.0394
+Incumbent StackingLR has Balanced Accuracy: 0.5774
+New stacking model is not better. Saving candidate separately.
+Candidate stacking model saved to C:\Users\Golds\.cookiecutters\serj-ds-skeleton\{{cookiecutter.project_name}}\ydata_click_and_morety\models\StackingLR_20250214_160203.joblib
